@@ -1,0 +1,628 @@
+@import './fonts/fonts.css';
+* {
+    box-sizing: border-box;
+}
+.whole_page_loader
+{
+    /* padding-top:200px; */
+    display: flex;
+    justify-content: center;
+}
+.page_container{
+    width:100vw;
+    height:100vh;
+    overflow: scroll;
+    overflow: -moz-scrollbars-none;
+}
+.page_container::-webkit-scrollbar
+{
+    width: 0;
+}
+/* ::-webkit-scrollbar pseudo element, which allows us to modify the look of the browser's scrollbar. IE and Edge supports the -ms-overflow-style: property, which allows us to hide the scrollbar, but keep functionality. */
+
+/* Note: This example will not work in Firefox, as they dropped the support for hidden scrollbars without functionality (you could use  */
+/* .page_container::webk */
+.page_sub_container{
+    width:100%;
+}
+/* header........................................................ */
+.header_container{
+    width:100vw;
+    margin-bottom: 1+5px;
+    position: fixed;
+    z-index: 4;
+    top:0;
+}
+.header_container .ui.segment{
+    padding: 5px 1rem 0px 1rem;
+    border-radius: 0;
+}
+
+/* ##ADD RECEIPTS ............................................................. */
+.all_receipts_container{
+    width:100vw;
+    padding-top: 60px;
+}
+.add_new_receipt_btn_container
+{
+    width:100%;
+    display:flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+.all_receipts_container .receiptContainer:last-child{
+    margin-bottom: 0;
+}
+.receiptContainer
+{
+    width:100%;
+    background-image: url('../img/receipt_background.jpg');
+    background-size: cover;
+    padding: 20px 0;
+    margin-bottom:5px;
+}
+.receiptNameAdress{
+    width:100%;
+    padding: 0 70px;
+    font-family: "BigNoodleTitling";
+    font-size: 18px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+.receiptNameAdress select
+{
+    background-color: transparent;
+    font-family: "BigNoodleTitling";
+    font-size: 18px;
+    text-align: center;
+    border:0;
+}
+.textBreeakLine{
+    width:100%;
+    word-wrap: break-word;
+}
+.receipt_title_container
+{
+    width:100%;
+    display:flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: "BigNoodleTitling";
+    font-size: 24px;
+    margin: 10px 0 20px 0;
+}
+.receptContentContainer
+{
+    width:100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* receipt products items */
+.recept_product_items_container,
+.receipt_totals_container
+{
+    width:330px;
+    margin-bottom: 10px;
+    position: relative;
+}
+.receipt_totals_container .product_item_container:first-child
+{
+    margin-top: 0;
+}
+.product_item_container
+{
+    width:100%;
+    display: flex;
+    font-family: "BigNoodleTitling";
+    font-size: 18px;
+    margin-top: 14px;
+}
+.product_item_action_buttons
+{
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+.quantity_edit_btn
+{
+    width:40px;
+    height:27px;
+    text-align: center;
+    font-family: "BigNoodleTitling";
+    font-size:30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 5px;
+}
+.quantity_edit_btn:active
+{
+    color:red;
+}
+.product_item_content_container
+{
+    width:290px;
+    padding-left:10px;
+    height: 100px;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(255,255,255,0.5);
+}
+.product_content_row
+{
+    width:100%;
+    height:30px;
+    display: flex;
+    justify-content: space-between;
+}
+.product_content_row_first
+{
+    margin-left: -50px;
+    margin-bottom: 8px;
+}
+.product_item_td
+{
+    display: flex;
+    height: 100%;
+}
+.product_item_name
+{
+    font-size: 20px;
+    text-align: left;
+    width:200px;
+    height:100%;
+    overflow:hidden;
+}
+.product_item_name > div
+{
+    text-overflow: ellipsis;
+    width: 100%;
+    height: 100%;
+    line-height: 30px;
+    word-break: break-all;
+}
+.product_item_td_top_left{
+    width:50px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.product_item_td_top_left .product_item_tva
+{
+    width: 10px;
+
+}
+.product_item_utiltity
+{
+    width: 20px;
+    height: 20px;
+    padding:5px;
+    border-radius: 25px;
+}
+
+.product_content_row_second
+{
+    height:40px;
+    display: flex;
+    align-items: center;
+}
+.product_quantity_price_
+{
+    width:175px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    position: relative;
+    justify-content: space-between;
+    padding-right: 12px;
+}
+.product_quantity_price_ .apply_changes_globbaly
+{
+    width: 33px;
+    height: 30px;
+    position: absolute;
+    right: -31px;
+    color: green;
+    font-size: 32px;
+    top: 4px;
+}
+.product_item_price_input_container > input
+{
+    margin-left: 5px;
+    background-color: transparent;
+    font-family: "BigNoodleTitling";
+    font-size: 20px;
+    padding-left: 5px;
+    width:100px;
+}
+.product_content_row_last
+{
+    justify-content: flex-end;
+    align-items: center;
+}
+.item_product_total_price
+{
+    /* width:100 */
+}
+/* receipt bottom section */
+.receipt_totals_container
+{
+    font-family: "BigNoodleTitling";
+    font-size: 18px;
+    border-top:2px dotted black;
+    padding-top: 2px;
+}
+.total_sub_container
+{
+    width:100%;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 7px;
+}
+.receipt_date_container
+{
+    width:100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+}
+.receipt_date_container > input{
+    border:none;
+    font-family: "BigNoodleTitling";
+    font-size: 18px;
+    margin-left:60px;
+    background:transparent;
+}
+.addNewProductItemButtonContainer
+{
+    width:100px;
+    height:30px;
+    position: absolute;
+    left:0;
+    top:-60px;
+    font-size:14px;
+    
+}
+.delete_button_product_item
+{
+    height:30px;
+    position: absolute;
+    LEFT: 156%;
+    top: 13px;
+}
+.delete_button_product_item:active
+{
+    color:red;
+}
+.addNewProductItemButtonContainer button
+{
+    /* height: 30px; */
+    width:100%;
+}
+.rel_{
+    position: relative;
+}
+
+/* ##PRODUCTS.......................................................... */
+.all_products_container
+{
+    padding-top:100px;
+    width:100%;
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 50px;
+}
+.product_select_item_container
+{
+    width:330px;
+    font-family: "BigNoodleTitling";
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.product_SLEECT_item_price_input_container > input
+{
+    background-color: transparent;
+    font-family: "BigNoodleTitling";
+    font-size: 20px;
+    width:100px;
+}
+.w100_ 
+{
+    width:100%;
+}
+.product_item_name.w100_ > input
+{
+    background-color: white;
+    width:100%;
+}
+.product_select_item_container_new
+{
+    height:100px;
+    display:flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background-image: url('../img/receipt_background.jpg');
+    background-size: cover;
+}
+.product_item_td_top_left.new_product
+{
+    display: flex;
+    /* justify-cont; */
+    width:100%;
+
+}
+.product_item_td_top_left.new_product .product_item_utiltity
+{
+    margin-left: 20px;
+}
+.product_item_td_top_left.new_product .product_item_tva
+{
+    display: flex;
+    width:100%;
+}
+.addSelectedProductsBtnContainer
+{
+    position: fixed;
+    z-index: 3;
+    bottom: 0;
+    width:100vw;
+    height:50px;
+}
+.addSelectedProductsBtnContainer button{
+    width:100%;
+    height:100%;
+    border-radius: 0!important;
+    font-family: "BigNoodleTitling"!important;;
+    font-size: 20px!important;
+
+}
+.product_quantity_price_ .product_item_utiltity
+{
+    margin-left:20px;
+}
+.checkProduct
+{
+    padding:0;
+}
+.checkProduct > i
+{
+    font-size:20px;
+}
+.checkProduct.selected___ i
+{
+    color:white!important;
+}
+.checkProduct.selected___ button
+{
+    background-color:#19d400!important;
+}
+
+.prod_bk
+{
+    background-image: url('../img/receipt_background.jpg');
+    background-size: cover;
+}
+.prod_padding_
+{
+    padding:10px 0 0 10px;
+}
+
+.login_page
+{
+    width:100vw;
+    height: 100vh;
+    padding-top: 25vh;
+    display: flex;
+    justify-content: center;
+    background-image: url('../img/bkr.jpg');
+    background-size: cover;
+}
+.receiptContainer 
+{
+    position: relative;
+}
+.deleteButton_receipt
+{
+    position: absolute;
+    right:0;
+    top:0;
+    color:red;
+    font-size: 20px;
+    text-align: right;
+    padding: 10px;
+}
+.toggle_q_inc
+{
+    width: 40px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-size: 25px;
+    background-color: #1b1c1d;
+    box-shadow: 0 0 0 0 rgba(34,36,38,.15) inset;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    font-family: "BigNoodleTitling";
+    cursor: pointer;
+}
+.login_form
+{
+    width: 300px;
+    background-color: rgba(255,255,255,0.3);
+    height: 138px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+
+}
+.text_error
+{
+    width:100%;
+    text-align: center;
+    background-color: rgba(255,255,255,0.3);
+
+    font-family: "BigNoodleTitling"!important;;
+    font-size: 20px!important;
+}
+.header_container .ui.inverted.secondary.menu
+{
+    position: relative;
+}
+.logout_button button
+{
+    position: absolute;
+    right: 0;
+    border: 1px solid white;
+}
+
+/* history chart .........................*/
+.full_container
+{
+    width:100vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.history_status_chart.sums
+{
+    display: flex;
+    justify-content: space-between;
+    font-family: "BigNoodleTitling";
+    font-size: 20px;
+}
+.history_status_container
+{
+    width: 340px;
+    margin-top:80px;
+    overflow: hidden;
+}
+.history_status_chart
+{
+    width:100%;
+    height: 20px;
+    display: flex;
+}
+.good
+{
+    background-color: green;
+
+}
+.bad
+{
+    background-color: red;
+}
+.spending_legend_squere.bad,
+.spending_legend_squere.good
+{
+    margin-right: 5px;
+}
+.legends_chart
+{
+    padding:5px;
+    font-family: "BigNoodleTitling";;
+    display: flex;
+    width:100%!important;
+    height: 30px;
+}
+.legends_content_
+{
+    display: flex;
+    margin-right: 60px;
+}
+.spending_legend_squere
+{
+    width:20px;
+    height: 20px;
+    font-size: 14px;
+}
+.topProducts_container
+{
+    width:100%;
+}
+.product_container
+{
+    display: flex;
+    justify-content: space-between;
+    width:100%;
+    height: 30px;
+    font-family: "BigNoodleTitling";
+    font-size: 18px;
+}
+.product_container > .prod_name
+{
+    width: 65%;
+}
+.product_container > .prod_utility
+{
+    width: 5%;
+}
+.product_container > .product_total_money
+{
+    width: 30%;
+    text-align: right;
+}
+._container
+{
+    width:100%;
+    height:45px;
+}
+._container > input[type='date'] {
+    background-color: transparent;
+    font-family: "BigNoodleTitling";
+    width: 120px;
+    height: 16px;
+    border: none;
+    font-size: 16px;
+}
+._container > input[type='date']:last-child {
+    margin-right: -56px;
+}
+._flex_space_between
+{
+    display: flex;
+    justify-content: space-between;
+}
+.generic_font{
+    font-size: 18px;
+    font-family: "BigNoodleTitling";
+    
+}
+._h_auto{
+    height:auto!important;
+}
+._mg_top_40
+{
+    margin-top: 40px;
+}
+._display_flex{
+display: flex;
+}
+.utility_switcher 
+{
+  height: 30px;
+  width: 112px;
+  justify-content: space-between;
+  align-items:center;
+  line-height: 30px;
+}
+.margin_top_20
+{
+    margin-top: 20px;
+}
+.title_box_bottom_border_
+{
+    border-bottom: 1px solid rgba(0,0,0,0.2);
+    margin-bottom: 12px;
+}
+.prod_utility.UTIL
+{
+    color:green;
+}
+.prod_utility.NO
+{
+    color:red;
+}
