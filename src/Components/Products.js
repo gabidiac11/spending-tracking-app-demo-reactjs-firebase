@@ -4,6 +4,7 @@ import * as firebase from "firebase";
 import ProductChoosingItem from "./reusableFields/ProductChoosingItem";
 import { Button } from "semantic-ui-react";
 import AddNewProduct from "./reusableFields/AddNewProduct";
+import {checkFloatNumberInput, cleanFloatNumberErrors} from '../utils/FunctiiUtile';
 
 class Products extends Component {
   constructor(props) {
@@ -21,29 +22,46 @@ class Products extends Component {
       erorsProductNew: {},
       isFetchingAddingNewProduct: false,
       selected_product_ids:[],
-      searchInput:''
+      searchInput:'',
+      productsIdsSorted:[]
     };
   }
-  componentDidMount = () => {};
-
+  componentDidMount = () => {
+    this.setUpProductsSort();
+  };
+  componentDidUpdate = prevProps =>{
+    if(prevProps.products !== this.props.products)
+    {
+      this.setUpProductsSort();
+    }
+  }
+  setUpProductsSort = () => {
+    const {products} = this.props;
+    this.setState( {
+        productsIdsSorted: Object.keys(products).sort(
+          (id1, id2 ) => {
+            if ( this.props.products[id1].name < this.props.products[id2].name )
+            {
+              return -1;
+            }
+            if ( this.props.products[id1].name > this.props.products[id2].name )
+            {
+              return 1;
+            }
+            return 0;
+          }
+        ) || []
+    });
+  }
+  
   onChangeAddedProd = (propName, val) => {
     if (this.state.isFetchingAddingNewProduct) return;
-    var reg = new RegExp('^\\d+$');
-    // if(propName === 'price' )
-    // {
-
-    //   if(val.length === 0)
-    //   {
-    //     val = '0';
-    //   }else{
-    //     if(!reg.test(val))
-    //     return;
-    //   }
-    //   if(val.charAt(0) === '0' && val.length>1)
-    //   {
-    //     val = val.slice(1, val.length-1);
-    //   }
-    // }
+    if(propName === 'price' )
+    {
+      val = checkFloatNumberInput(val);
+      if(val === -1)
+        return;
+    }
     this.setState({
       product_new: { ...this.state.product_new, [propName]: val }
     });
@@ -79,6 +97,7 @@ class Products extends Component {
             .ref()
             .update(product_db).then( error => {
               if (!error) {
+                this.props.onAddingNewProduct(newProductId, product_new, this.props.id_store_selected);
                 product_new = {
                   name: "",
                   price: 0,
@@ -87,7 +106,7 @@ class Products extends Component {
                   category: 1
                 };
               }else{
-                console.log(error+'fdsf');
+                console.log(error);
               }
               this.setState({
                 isFetchingAddingNewProduct: false,
@@ -141,7 +160,7 @@ class Products extends Component {
             style={{ 
             width: '90%',
             marginBottom:'16px',
-          }}
+            }}
             onClick={() => {
               this.setState({ add_new_product: true });
             }}
@@ -156,7 +175,8 @@ class Products extends Component {
             <i aria-hidden={"true"} className="search icon"></i>
           </div>
         </div>
-        {Object.keys(products).reverse().map(id_product => {
+        {
+        this.state.productsIdsSorted.map(id_product => {
           if(!this.filterProducts(products[id_product].name))
           {
             return;

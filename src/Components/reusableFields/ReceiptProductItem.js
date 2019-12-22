@@ -13,14 +13,14 @@ const ReceiptProductItem = props => {
       <div 
        
         className="product_item_action_buttons">
-        <div className="quantity_edit_btn"
-        
-        onClick={() => props.onChangeQuantity(Math.floor((quantity_submit + q_inc)*100)/100)}
+        <div 
+          className="quantity_edit_btn"
+          onClick={() => props.onChangeQuantity(Math.floor((quantity_submit + q_inc)*100)/100, true)}
         >
         <i className="fas fa-plus"></i>
         </div>
         <div 
-        onClick={() => props.onChangeQuantity(Math.floor((quantity_submit-q_inc)*100)/100 )}
+        onClick={() => props.onChangeQuantity(Math.floor((quantity_submit-q_inc)*100)/100, true )}
         className="quantity_edit_btn">
         <i className="fas fa-minus"></i>
         </div>
@@ -32,20 +32,17 @@ const ReceiptProductItem = props => {
               <div>{name}</div>
             </div>
             <div 
-            
             onClick={() => props.onChangeQuantity(0)}
             className="delete_button_product_item" >
                 <i className="fas fa-trash"></i>
             </div>
           </div>
-
-          
         </div>
         <div className="product_content_row product_content_row_second ">
           <div className="product_quantity_price_">
               <div className="product_quantity_item_set">{quantity_submit} BUC x</div>
               <div className="product_item_price_input_container">
-                <input value={price} onChange={
+                <input value={price == '0' ? '' : price} onChange={
                   (e) => {
                     props.updateReceiptProductPrice(e.target.value);
                   }
@@ -68,7 +65,7 @@ const ReceiptProductItem = props => {
         </div>
         <div className="product_content_row product_content_row_last">
             <div className="item_product_total_price">
-            { ((Number)(quantity_submit*price)).toFixed(2) }
+            { Math.floor(((Number)(quantity_submit*price))*100)/100 }
             </div>
         </div>
       </div>

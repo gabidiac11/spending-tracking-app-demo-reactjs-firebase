@@ -2,8 +2,9 @@ import React, { Component } from "react";
 import { Button } from "semantic-ui-react";
 
 import Receipt from "./Recept.jsx";
-import { todaysDate } from "../utils/FunctiiUtile.js";
+import { todaysDate, cleanFloatNumberErrors } from "../utils/FunctiiUtile.js";
 import ProductUtilityBum from "./reusableFields/ProductUtilityBum.js";
+
 
 class SpendingStatus extends Component {
   constructor(props) {
@@ -83,11 +84,18 @@ class SpendingStatus extends Component {
     });
   }
   setUpProductChart = () => {
-    const { receipts } = this.props;
+    let { receipts } = this.props;
     let all_products = {};
     let total_good = 0;
     let total_bad = 0;
     let products_totals_filtered  = {};
+    for (let r_id in receipts) {
+      const date_txt = receipts[r_id].date;
+      for (let p_id in receipts[r_id].products) {
+        receipts[r_id].products[p_id].price = cleanFloatNumberErrors(receipts[r_id].products[p_id].price);
+      }
+    }
+
     for (let r_id in receipts) {
       const date_txt = receipts[r_id].date;
       for (let p_id in receipts[r_id].products) {
@@ -282,7 +290,7 @@ class SpendingStatus extends Component {
                 }
               }
               return (
-                <div className="product_container">
+                <div key={product.refenceId} className="product_container">
                   <div className="prod_name"> {product.name}</div>
                   <div className={"prod_utility" + (product.utility ? " UTIL" : " NO")}>
                     {product.utility ? "UTIL" : "NO"}

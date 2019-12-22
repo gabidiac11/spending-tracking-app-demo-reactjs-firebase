@@ -38,6 +38,7 @@ const AddNewProduct = props => {
       <div className="product_item_td product_item_td_top_left new_product">
         <div className="product_item_tva">
           <select 
+          className='ui button'
             val={tva} 
             onChange={
               (e) =>{

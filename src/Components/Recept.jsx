@@ -2,19 +2,36 @@ import React, { Component } from "react";
 import { Button } from "semantic-ui-react";
 import { db } from "../utils/dummy_databse.js";
 import ReceiptProductItem from "./reusableFields/ReceiptProductItem.js";
-import { newExpression } from "@babel/types";
+import objectPath from 'object-path';
 
 class Receipt extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      q_inc:0.1
+      q_inc:0.1,
+      total:0
     };
   }
-  componentDidMount = () => {};
+  componentDidMount = () => {
+  };
   render() {
     const { receipt, stores } = this.props;
     const store = receipt.storeId ? stores[receipt.storeId] : "";
+    let total = 0;
+    if(objectPath.get(receipt, 'products'))
+    {
+      for(let p_id in receipt.products)
+      {
+        if(objectPath.get(receipt, `products.${p_id}.price`))
+        {
+          const p = typeof receipt.products[p_id].price === 'number' ? receipt.products[p_id].price : 0;
+          const q = receipt.products[p_id].quantity ? receipt.products[p_id].quantity : 0;
+          total += Math.floor(Number(p) * Number(q)*100)/100;
+          total = Math.floor(total*1000)/1000;
+        }
+      }
+    }
+    total = Math.floor(total*100)/100;
     return (
       <div className="receiptContainer">
         <div
@@ -81,41 +98,10 @@ class Receipt extends Component {
                   quantity={receipt_product.quantity}
                   tva={receipt_product.tva}
                   utility={receipt_product.utility}
-                  onChangeQuantity={quanitity => {
-                    this.props.onChangeQuantity(quanitity, id_product);
+                  onChangeQuantity={(quanitity, noConfirm = false) => {
+                    this.props.onChangeQuantity(quanitity, id_product, noConfirm);
                   }}
                   updateReceiptProductPrice={new_price => {
-                    let temp = new_price;
-                    let count = (temp.match(/\./g) || []).length;
-                    console.log(count);
-                    if (count > 1) return;
-                    const length = new_price.length;
-                    if (length > 0) {
-                      if (
-                        length > 1 &&
-                        new_price[0] === "0" &&
-                        new_price[1] !== "."
-                      ) {
-                        let index = 0;
-                        while (new_price[index] === "0" && index < length - 1) {
-                          index += 1;
-                        }
-                        new_price.slice(0, index);
-                      }
-
-                      for (let i = 0; i < new_price.length; i++) {
-                        if (
-                          !(new_price[i] >= "0" && new_price[i] <= "9") &&
-                          new_price[i] != "."
-                        ) {
-                          console.log();
-                          return;
-                        }
-                      }
-                    } else {
-                      new_price = 0;
-                    }
-                    // new_price = Number(new_price);
                     this.props.updateReceiptProductPrice(new_price, id_product);
                   }}
                   applyPriceChangeGlobally={price=>{
@@ -140,7 +126,7 @@ class Receipt extends Component {
             </div>
             <div className="total_sub_container">
               <div>Total</div>
-              <div>{receipt["total"]}</div>
+              <div>{total}</div>
             </div>
             <div className="total_sub_container">{receipt.payment}</div>
           </div>

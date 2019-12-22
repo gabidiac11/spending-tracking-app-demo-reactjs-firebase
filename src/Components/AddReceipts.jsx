@@ -3,6 +3,7 @@ import { Button } from "semantic-ui-react";
 
 import Receipt from "./Recept.jsx";
 import { todaysDate } from "../utils/FunctiiUtile.js";
+import objectPath from "object-path";
 class AddReceipts extends Component {
   constructor(props) {
     super(props);
@@ -11,8 +12,7 @@ class AddReceipts extends Component {
       receipt_new: {
         date: todaysDate(),
         storeId: null,
-        products: {},
-        total: 0
+        products: {}
       }
     };
   }
@@ -30,6 +30,7 @@ class AddReceipts extends Component {
               onClick={() => {
                 this.setState({ add_new_receipt: true });
               }}
+              
             >
               Add new receipt
             </Button>
@@ -65,14 +66,14 @@ class AddReceipts extends Component {
                   receipt_new: {
                     date: todaysDate(),
                     storeId: null,
-                    products: {},
-                    total: 0
+                    products: {}
                   }
                 }
               );
             }}
-            receipt={this.state.receipt_new} 
-            stores={stores} 
+            receipt = {this.state.receipt_new} 
+            stores = {stores} 
+            total = {0}
           />
         )}
         {
@@ -80,8 +81,8 @@ class AddReceipts extends Component {
           const receipt = receipts[receipt_id];
           return (
                 <Receipt 
-                applyPriceChangeGlobally={this.props.applyPriceChangeGlobally}
-                  addProductsToReceipt={
+                  applyPriceChangeGlobally={this.props.applyPriceChangeGlobally}
+                  addProductsToReceipt = {
                     () => 
                     {
                       const selected_receipt_credentials = {
@@ -96,9 +97,8 @@ class AddReceipts extends Component {
                     this.props.onDeleteReceipt(receipt_id);
                   }}
                   onChangeDate={(value) =>{ this.props.onChangeDate(receipt_id, value) }}
-
                   isFetchingQuantity={this.props.isFetchingQuantity}
-                  onChangeQuantity={(quantity, id_product) => this.props.onChangeQuantity(quantity, id_product, receipt_id)}
+                  onChangeQuantity={(quantity, id_product, noConfirm = false) => this.props.onChangeQuantity(quantity, id_product, receipt_id, noConfirm)}
                   updateReceiptProductPrice={(new_price, id_product) => this.props.updateReceiptProductPrice(new_price, id_product, receipt_id)}
                   key={receipt_id} 
                   receipt={receipt} 
