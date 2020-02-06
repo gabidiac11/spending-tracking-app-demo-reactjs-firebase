@@ -61,14 +61,12 @@ const AddNewProduct = props => {
         {
           isFetchingAddingNewProduct ?
           <Button 
-          seconday 
           loading
           >
           <i className="fas fa-plus-circle"></i>
           </Button>
           :
           <Button 
-          seconday 
           onClick={props.onSubmitNewProduct}>
           <i className="fas fa-plus-circle"></i>
           </Button>

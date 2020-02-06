@@ -12,7 +12,11 @@ class Login extends Component {
     };
   }
 
-  componentDidMount = () => {};
+  componentDidMount = () => {
+    if(this.props.demo === true){
+      this.props.permitAccess();
+    }
+  };
   
   login = (text) =>
   {

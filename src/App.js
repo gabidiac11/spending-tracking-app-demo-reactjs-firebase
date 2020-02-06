@@ -13,8 +13,8 @@ import { todaysDate, checkFloatNumberInput } from "./utils/FunctiiUtile";
 import WholeScreenLoader from "./Components/reusableFields/WholeScreenLoader";
 import Login from "./Components/Login";
 import SpendingStatus from "./Components/SpendingStatus";
-import { Confirm } from 'semantic-ui-react';
-import objectPath from 'object-path';
+import { Confirm } from "semantic-ui-react";
+import objectPath from "object-path";
 // import Spend
 
 class App extends Component {
@@ -41,16 +41,17 @@ class App extends Component {
       isFetchingStorePrice: {},
       logged: false,
       openConfirmDialog: false,
-      calledFunction: '',
-      parameters: {}
+      calledFunction: "",
+      parameters: {},
+      q_inc: 0.1,
+      receipt_scroll_top: 0
     };
   }
   componentDidMount = () => {
     this.init();
   };
   init = () => {
-
-    if (localStorage.getItem("auth") === "bine") {
+    if (localStorage.getItem("auth") === "bine" || this.props.demo) {
       this.setState({
         logged: true
       });
@@ -77,26 +78,18 @@ class App extends Component {
         for (let receipt_id in db.receipts) {
           if (db.receipts[receipt_id].products == null) {
             db.receipts[receipt_id]["products"] = {};
-          }
-          else
-          {
-            for( let p_id in db.receipts[receipt_id].products)
-            {
-              if(db.receipts[receipt_id].products[p_id].price)
-              {
+          } else {
+            for (let p_id in db.receipts[receipt_id].products) {
+              if (db.receipts[receipt_id].products[p_id].price) {
                 // db.receipts[receipt_id].products[p_id].price = Number(db.receipts[receipt_id].products[p_id].price) || 0;
-              }
-              else
-              {
+              } else {
                 db.receipts[receipt_id].products[p_id].price = 0;
               }
 
-              if(db.receipts[receipt_id].products[p_id].quantity)
-              {
-                db.receipts[receipt_id].products[p_id].quantity = Number(db.receipts[receipt_id].products[p_id].quantity) || 0;
-              }
-              else
-              {
+              if (db.receipts[receipt_id].products[p_id].quantity) {
+                db.receipts[receipt_id].products[p_id].quantity =
+                  Number(db.receipts[receipt_id].products[p_id].quantity) || 0;
+              } else {
                 db.receipts[receipt_id].products[p_id].quantity = 1;
               }
             }
@@ -113,10 +106,10 @@ class App extends Component {
             for (let p_id in db.stores[storeId].products) {
               if (db.stores[storeId].products[p_id].price == null) {
                 db.stores[storeId].products[p_id].price = 0;
-              }
-              else
-              {
-                db.stores[storeId].products[p_id].price = Number(db.stores[storeId].products[p_id].price); 
+              } else {
+                db.stores[storeId].products[p_id].price = Number(
+                  db.stores[storeId].products[p_id].price
+                );
               }
             }
           }
@@ -161,12 +154,12 @@ class App extends Component {
     } = this.state.selected_receipt_credentials;
     if (selectedReceiptId == null || id_store_selected == null) {
       this.setState({
-        redirectToPage: "add_receipts",
         selected_receipt_credentials: {
           selectedReceiptId: null,
           id_store_selected: null,
           date: todaysDate()
-        }
+        },
+        choose_products: false
       });
       return;
     }
@@ -207,7 +200,7 @@ class App extends Component {
             isFetchingAddingNewProducts: false
           };
           if (!error) {
-            state_dispatch["redirectToPage"] = "add_receipts";
+            state_dispatch["choose_products"] = false;
             state_dispatch["selected_receipt_credentials"] = {
               selectedReceiptId: null,
               id_store_selected: null,
@@ -254,7 +247,7 @@ class App extends Component {
               isFetchingAddingNewProducts: false
             };
             if (!error) {
-              state_dispatch["redirectToPage"] = "add_receipts";
+              state_dispatch["choose_products"] = false;
               state_dispatch["selected_receipt_credentials"] = {
                 selectedReceiptId: null,
                 id_store_selected: null,
@@ -273,11 +266,10 @@ class App extends Component {
   selectReceipt = selected_receipt_credentials => {
     this.setState({
       selected_receipt_credentials: selected_receipt_credentials,
-      redirectToPage: "products"
+      choose_products: true
     });
   };
   onChangeQuantity = (quantity, id_product, receipt_id, noConfirm) => {
-
     if (this.state.isFetchingQuantity[receipt_id + id_product] === true) return;
     this.setState({
       isFetchingQuantity: {
@@ -288,8 +280,7 @@ class App extends Component {
     let receipt = this.state.receipts[receipt_id];
     if (quantity <= 0) {
       this.onDeleteProductFromReceipt(receipt_id, id_product, noConfirm);
-    }
-    else {
+    } else {
       firebase
         .database()
         .ref()
@@ -309,46 +300,46 @@ class App extends Component {
     }
   };
   onDeleteProductFromReceipt = (receipt_id, id_product, noConfirm) => {
-    if(!noConfirm)
-    {
+    if (!noConfirm) {
       //check if the receipt is older (meaning maybe someone is scrolling press delete by mistake)
       const date_receipt = this.state.receipts[receipt_id].date || todaysDate();
-      if(date_receipt === todaysDate())
-      {
+      if (date_receipt === todaysDate()) {
         noConfirm = true;
       }
     }
     if (this.state.openConfirmDialog === true || noConfirm === true) {
-      this.setState({
-        openConfirmDialog: false,
-        calledFunction: '',
-        calledFunctionParameters: {}
-      }, () => {
-        firebase
-          .database()
-          .ref()
-          .child(`receipts/${receipt_id}`)
-          .update({ [`products/${id_product}`]: null })
-          .then(error => {
-            if (!error) {
-              this.setState({
-                isFetchingQuantity: {
-                  ...this.state.isFetchingQuantity,
-                  [receipt_id + id_product]: false
-                }
-              });
-            } else {
-            }
-          });
-      });
-    }
-    else {
+      this.setState(
+        {
+          openConfirmDialog: false,
+          calledFunction: "",
+          calledFunctionParameters: {}
+        },
+        () => {
+          firebase
+            .database()
+            .ref()
+            .child(`receipts/${receipt_id}`)
+            .update({ [`products/${id_product}`]: null })
+            .then(error => {
+              if (!error) {
+                this.setState({
+                  isFetchingQuantity: {
+                    ...this.state.isFetchingQuantity,
+                    [receipt_id + id_product]: false
+                  }
+                });
+              } else {
+              }
+            });
+        }
+      );
+    } else {
       this.setState({
         openConfirmDialog: true,
-        calledFunction: 'onDeleteProductFromReceipt',
+        calledFunction: "onDeleteProductFromReceipt",
         calledFunctionParameters: {
           receipt_id: receipt_id,
-          id_product: id_product,
+          id_product: id_product
         },
         isFetchingQuantity: {
           ...this.state.isFetchingQuantity,
@@ -356,14 +347,13 @@ class App extends Component {
         }
       });
     }
-
-  }
+  };
   updateReceiptProductPrice = (new_price, id_product, receipt_id) => {
     console.log(new_price);
     new_price = checkFloatNumberInput(new_price);
     if (
       this.state.isFetchingUpdatingRECEIPT_product_price[
-      receipt_id + id_product
+        receipt_id + id_product
       ] === true ||
       new_price === -1
     )
@@ -402,8 +392,7 @@ class App extends Component {
       .ref()
       .child(`productPriceFluctuation`)
       .update({ [`${id_product}/${todaysDate()}`]: new_price })
-      .then(error => {
-      });
+      .then(error => {});
   };
   onChangeDate = (receiptId, value) => {
     if (this.state.isFetchingReceiptDate === true) return;
@@ -434,42 +423,44 @@ class App extends Component {
   };
   onDeleteReceipt = receiptId => {
     if (this.state.openConfirmDialog === true) {
-      this.setState({
-        openConfirmDialog: false,
-        calledFunction: '',
-        calledFunctionParameters: {}
-      }, () => {
-        if (this.state.isFetchingDeleteReceipt === true) return;
-        this.setState({
-          isFetchingDeleteReceipt: {
-            ...this.state.isFetchingDeleteReceipt,
-            [receiptId]: true
+      this.setState(
+        {
+          openConfirmDialog: false,
+          calledFunction: "",
+          calledFunctionParameters: {}
+        },
+        () => {
+          if (this.state.isFetchingDeleteReceipt === true) return;
+          this.setState({
+            isFetchingDeleteReceipt: {
+              ...this.state.isFetchingDeleteReceipt,
+              [receiptId]: true
+            }
+          });
+          if (receiptId !== "new") {
+            firebase
+              .database()
+              .ref()
+              .child(`receipts`)
+              .update({ [receiptId]: null })
+              .then(error => {
+                if (!error) {
+                  this.setState({
+                    isFetchingDeleteReceipt: {
+                      ...this.state.isFetchingDeleteReceipt,
+                      [receiptId]: false
+                    }
+                  });
+                } else {
+                }
+              });
           }
-        });
-        if (receiptId !== "new") {
-          firebase
-            .database()
-            .ref()
-            .child(`receipts`)
-            .update({ [receiptId]: null })
-            .then(error => {
-              if (!error) {
-                this.setState({
-                  isFetchingDeleteReceipt: {
-                    ...this.state.isFetchingDeleteReceipt,
-                    [receiptId]: false
-                  }
-                });
-              } else {
-              }
-            });
         }
-      });
-    }
-    else {
+      );
+    } else {
       this.setState({
         openConfirmDialog: true,
-        calledFunction: 'onDeleteReceipt',
+        calledFunction: "onDeleteReceipt",
         calledFunctionParameters: {
           receiptId: receiptId
         }
@@ -506,16 +497,16 @@ class App extends Component {
   onClearFunctionSelection = () => {
     this.setState({
       openConfirmDialog: false,
-      calledFunction: '',
+      calledFunction: "",
       parameters: {}
     });
-  }
+  };
   callFunction(f_name, f_param) {
     switch (f_name) {
-      case 'onDeleteReceipt':
+      case "onDeleteReceipt":
         this.onDeleteReceipt(f_param.receiptId);
         break;
-      case 'onDeleteProductFromReceipt':
+      case "onDeleteProductFromReceipt":
         this.onDeleteProductFromReceipt(f_param.receipt_id, f_param.id_product);
         break;
       default:
@@ -523,170 +514,188 @@ class App extends Component {
     }
   }
   render() {
+    const { demo } = this.props;
     return (
-      <div className="page_container">
-        <div className="page_sub_container">
-          <div>
-            <Confirm
-              open={this.state.openConfirmDialog}
-              onCancel={this.onClearFunctionSelection}
-              onConfirm={() => {
-                this.callFunction(this.state.calledFunction, this.state.calledFunctionParameters);
-              }}
-            />
-          </div>
-          <HashRouter>
-            <Route
-              render={routerProps => {
-                let pageName = routerProps.location.pathname.split("/");
-                pageName = pageName[1];
-                return (
-                  <>
-                    <Header
-                      logged={this.state.logged}
-                      logout={this.logout}
-                      pageName={pageName}
-                      tryGoToPage={this.tryGoToPage}
-                    />
-                  </>
-                );
-              }}
-            />
-            <Route
-              render={routerProps => {
-                // let pageName = routerProps.location.pathname.split("/");
-                // let id_user = pageName[2];
-                // pageName = pageName[1];
-                // let pageNameWhole = pageName;
-                // if(id_user != null ){
-                //   pageNameWhole += '/'+id_user;
-                // }
-                return (
-                  <>
-                    {/* 8/moderator */}
-                    <RedirectModerator
-                      redirectToPage={this.state.redirectToPage}
-                      pageRedirectedSetups={this.pageRedirectedSetups}
-                    />
-                  </>
-                );
-              }}
-            />
-
-            {this.state.logged === true ? (
-              <Switch>
-                {/* 8/add_receipts */}
-                <Route
-                  exact
-                  path="/add_receipts"
-                  render={routerProps => (
-                    <>
-                      {this.state.isFetchingReceipts === true ? (
-                        <WholeScreenLoader />
-                      ) : (
-                          <AddReceipts
-                            applyPriceChangeGlobally={
-                              this.applyPriceChangeGlobally
-                            }
-                            updateReceiptProductPrice={
-                              this.updateReceiptProductPrice
-                            }
-                            onChangeDate={this.onChangeDate}
-                            onDeleteReceipt={this.onDeleteReceipt}
-                            isFetchingQuantity={this.state.isFetchingQuantity}
-                            onChangeQuantity={this.onChangeQuantity}
-                            selectReceipt={this.selectReceipt}
-                            stores={this.state.stores}
-                            receipts={this.state.receipts}
-                          />
-                        )}
-                    </>
-                  )}
-                />
-                {/* 8/products */}
-                <Route
-                  exact
-                  path="/products"
-                  render={routerProps => (
-                    <>
-                      {this.state.isFetchingReceipts === true ? (
-                        <WholeScreenLoader />
-                      ) : (
-                          <Products
-                            products={
-                              objectPath.get(this.state, 'selected_receipt_credentials.id_store_selected') != null
-                                ?
-
-                                this.state.stores[
-                                  this.state.selected_receipt_credentials
-                                    .id_store_selected
-                                ].products
-                                : {}
-                            }
-                            isFetchingAddingNewProducts={
-                              this.state.isFetchingAddingNewProducts
-                            }
-                            id_store_selected={
-                              this.state.selected_receipt_credentials
-                                .id_store_selected
-                            }
-                            tvas={this.state.tvas}
-                            storeName={
-                              this.state.selected_receipt_credentials
-                                .id_store_selected != null
-                                ? this.state.stores[
-                                  this.state.selected_receipt_credentials
-                                    .id_store_selected
-                                ].name
-                                : ""
-                            }
-                            onAddingNewProduct = {(p_id, product, storeId) => {
-                              let {stores} = this.state;
-                              if(objectPath.get(stores, `${storeId}.products`))
-                              {
-                                if(stores[storeId].products)
-                                {
-                                  stores[storeId].products[p_id] = product;
-                                }
-                                else
-                                {
-                                  stores[storeId].products = {[p_id]:product};
-                                }
-                              }
-                              this.setState({
-                                stores:stores
-                              })
-                            }}
-                            submitSelectedProducts={this.submitSelectedProducts}
-                          />
-                        )}
-                    </>
-                  )}
-                />
-                {/* 8/charts */}
-                <Route
-                  exact
-                  path="/charts"
-                  render={routerProps => (
-                    <>
-                      {this.state.isFetchingReceipts === true ? (
-                        <WholeScreenLoader />
-                      ) : (
-                          <SpendingStatus 
-                            receipts={this.state.receipts} 
-                          />
-                        )}
-                    </>
-                  )}
-                />
-                <Redirect from="/" to="add_receipts" />
-              </Switch>
+      <>
+        {this.state.choose_products === true ? (
+          <>
+            {this.state.isFetchingReceipts === true ? (
+              <WholeScreenLoader />
             ) : (
-                <Login permitAccess={this.permitAccess} />
-              )}
-          </HashRouter>
-        </div>
-      </div>
+              <Products
+                products={
+                  objectPath.get(
+                    this.state,
+                    "selected_receipt_credentials.id_store_selected"
+                  ) != null
+                    ? this.state.stores[
+                        this.state.selected_receipt_credentials
+                          .id_store_selected
+                      ].products
+                    : {}
+                }
+                isFetchingAddingNewProducts={
+                  this.state.isFetchingAddingNewProducts
+                }
+                id_store_selected={
+                  this.state.selected_receipt_credentials.id_store_selected
+                }
+                tvas={this.state.tvas}
+                storeName={
+                  this.state.selected_receipt_credentials.id_store_selected !=
+                  null
+                    ? this.state.stores[
+                        this.state.selected_receipt_credentials
+                          .id_store_selected
+                      ].name
+                    : ""
+                }
+                onAddingNewProduct={(p_id, product, storeId) => {
+                  let { stores } = this.state;
+                  if (objectPath.get(stores, `${storeId}.products`)) {
+                    if (stores[storeId].products) {
+                      stores[storeId].products[p_id] = product;
+                    } else {
+                      stores[storeId].products = {
+                        [p_id]: product
+                      };
+                    }
+                  }
+                  this.setState({
+                    stores: stores
+                  });
+                }}
+                submitSelectedProducts={this.submitSelectedProducts}
+              />
+            )}
+          </>
+        ) : (
+          <>
+            <div className="page_container">
+              <div className="page_sub_container">
+                <div>
+                  <Confirm
+                    open={this.state.openConfirmDialog}
+                    onCancel={this.onClearFunctionSelection}
+                    onConfirm={() => {
+                      this.callFunction(
+                        this.state.calledFunction,
+                        this.state.calledFunctionParameters
+                      );
+                    }}
+                  />
+                </div>
+                <HashRouter>
+                  <Route
+                    render={routerProps => {
+                      let pageName = routerProps.location.pathname.split("/");
+                      pageName = pageName[1];
+                      return (
+                        <>
+                          <Header
+                            demo={demo}
+                            logged={this.state.logged}
+                            logout={this.logout}
+                            pageName={pageName}
+                            tryGoToPage={this.tryGoToPage}
+                          />
+                        </>
+                      );
+                    }}
+                  />
+                  <Route
+                    render={routerProps => {
+                      // let pageName = routerProps.location.pathname.split("/");
+                      // let id_user = pageName[2];
+                      // pageName = pageName[1];
+                      // let pageNameWhole = pageName;
+                      // if(id_user != null ){
+                      //   pageNameWhole += '/'+id_user;
+                      // }
+                      return (
+                        <>
+                          {/* 8/moderator */}
+                          <RedirectModerator
+                            redirectToPage={this.state.redirectToPage}
+                            pageRedirectedSetups={this.pageRedirectedSetups}
+                          />
+                        </>
+                      );
+                    }}
+                  />
+
+                  {this.state.logged === true ? (
+                    <Switch>
+                      {/* 8/add_receipts */}
+                      <Route
+                        exact
+                        path="/add_receipts"
+                        render={routerProps => (
+                          <>
+                            {this.state.isFetchingReceipts === true ? (
+                              <WholeScreenLoader />
+                            ) : (
+                              <AddReceipts
+                                switch_q_inc={() => {
+                                  this.setState({
+                                    q_inc: this.state.q_inc === 1 ? 0.1 : 1
+                                  });
+                                }}
+                                q_inc={this.state.q_inc}
+                                setPrevScrollTopReceipts={scroll_top => {
+                                  this.setState({
+                                    container_receipt_scroll_top: scroll_top
+                                  });
+                                }}
+                                scroll_top={
+                                  this.state.container_receipt_scroll_top
+                                }
+                                q_inc={this.state.q_inc}
+                                applyPriceChangeGlobally={
+                                  this.applyPriceChangeGlobally
+                                }
+                                updateReceiptProductPrice={
+                                  this.updateReceiptProductPrice
+                                }
+                                onChangeDate={this.onChangeDate}
+                                onDeleteReceipt={this.onDeleteReceipt}
+                                isFetchingQuantity={
+                                  this.state.isFetchingQuantity
+                                }
+                                onChangeQuantity={this.onChangeQuantity}
+                                selectReceipt={this.selectReceipt}
+                                stores={this.state.stores}
+                                receipts={this.state.receipts}
+                              />
+                            )}
+                          </>
+                        )}
+                      />
+                      {/* 8/charts */}
+                      <Route
+                        exact
+                        path="/charts"
+                        render={routerProps => (
+                          <>
+                            {this.state.isFetchingReceipts === true ? (
+                              <WholeScreenLoader />
+                            ) : (
+                              <SpendingStatus receipts={this.state.receipts} />
+                            )}
+                          </>
+                        )}
+                      />
+                      <Redirect from="/" to="add_receipts" />
+                    </Switch>
+                  ) : (
+                    <Login demo={demo} permitAccess={this.permitAccess} />
+                  )}
+                </HashRouter>
+              </div>
+            </div>
+          </>
+        )}
+      </>
     );
   }
 }

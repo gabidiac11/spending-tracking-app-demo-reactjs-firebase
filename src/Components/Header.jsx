@@ -34,7 +34,7 @@ class Header extends Component {
             <div className="logout_button">
 
             
-            {logged === true ? (
+            {logged === true && !this.props.demo ? (
               <Button secondary onClick={this.props.logout}>Log out</Button>
             ) : (
               ""

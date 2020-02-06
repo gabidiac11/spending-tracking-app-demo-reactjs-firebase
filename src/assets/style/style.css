@@ -2,6 +2,10 @@
 * {
     box-sizing: border-box;
 }
+body {
+    overflow: hidden;
+    overscroll-behavior: none;
+}
 .whole_page_loader
 {
     /* padding-top:200px; */
@@ -24,6 +28,13 @@
 /* .page_container::webk */
 .page_sub_container{
     width:100%;
+    width: 100%;
+    height: 100vh;
+    overflow: auto;
+}
+.page_sub_container::-webkit-scrollbar
+{
+    width: 0;
 }
 /* header........................................................ */
 .header_container{
@@ -40,8 +51,15 @@
 
 /* ##ADD RECEIPTS ............................................................. */
 .all_receipts_container{
-    width:100vw;
-    padding-top: 60px;
+    height: 100vh;
+    width: 100vw;
+    padding-top: 80px;
+    overflow: auto;
+    overscroll-behavior: none;
+}
+.all_receipts_container:-webkit-scrollbar
+{
+    width: 0;
 }
 .add_new_receipt_btn_container
 {
@@ -164,14 +182,12 @@
 .product_item_td
 {
     display: flex;
-    height: 100%;
 }
 .product_item_name
 {
     font-size: 20px;
     text-align: left;
     width:200px;
-    height:100%;
     overflow:hidden;
 }
 .product_item_name input {
@@ -214,7 +230,6 @@
 .product_quantity_price_
 {
     width:175px;
-    height: 100%;
     display: flex;
     align-items: center;
     position: relative;
@@ -309,14 +324,36 @@
 }
 
 /* ##PRODUCTS.......................................................... */
+.all_products_container_scroll {
+    padding-top: 50px;
+    padding-bottom: 50px;
+    height: 100vh;
+    overflow: auto;
+    position: relative;
+
+}
+.all_products_container_scroll::-webkit-scrollbar
+{
+    width: 0;
+}
+.container_scroll_handle{
+    width: 20px;
+    height: 40px;
+    background-color: red;
+    position: fixed;
+    right:0;
+    z-index: 9;
+}
 .all_products_container
 {
-    padding-top:100px;
     width:100%;
     display:flex;
     flex-direction: column;
     align-items: center;
-    padding-top: 50px;
+}
+.all_products_container::-webkit-scrollbar
+{
+    width: 0;
 }
 .product_select_item_container
 {
@@ -341,6 +378,7 @@
 {
     background-color: white;
     width:100%;
+    height:100%;
 }
 .product_select_item_container_new
 {
@@ -357,6 +395,7 @@
     /* justify-cont; */
     width:100%;
 
+
 }
 .product_item_td_top_left.new_product .product_item_utiltity
 {
@@ -372,8 +411,11 @@
     position: fixed;
     z-index: 3;
     bottom: 0;
-    width:100vw;
+    width:101vw;
     height:50px;
+}
+.addSelectedProductsBtnContainer .fas {
+    margin-right: 10px;
 }
 .addSelectedProductsBtnContainer button{
     width:100%;
@@ -446,10 +488,11 @@
 .toggle_q_inc
 {
     width: 40px;
-    position: absolute;
-    left: 0;
-    top: 0;
+    position: fixed;
+    left: 5px;
+    top: 50px;
     font-size: 25px;
+    z-index: 5;
     background-color: #1b1c1d;
     box-shadow: 0 0 0 0 rgba(34,36,38,.15) inset;
     color: white;

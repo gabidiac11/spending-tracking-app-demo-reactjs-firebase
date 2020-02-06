@@ -32,7 +32,7 @@ const ProductChoosingItem = props => {
         <div className={`checkProduct${product_selected === true ? ' selected___' : ''}`}
         >
         <Button 
-          seconday
+          
           // onClick={props.toggleCheckProduct}
         >
           <i className="fa fa-check" ></i>
