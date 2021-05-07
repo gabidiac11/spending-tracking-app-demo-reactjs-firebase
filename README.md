@@ -1,4 +1,6 @@
-Build live: https://gabriel-diac-mini-projects.000webhostapp.com/spending_up_reactjs_demo/index.html#/add_receipts
-
 Aplicație de gestionare și înregistrare a bonurilor fiscale în scopul analizei tipurilor de cheltuieli (marcate ca necesare/ne-necesare) pe anumte perioade, cu un mic chart si produse care pot fi inregistrate per magazin. Preturile variînd, fiecare bon are o copie a produsului dar care are o legatura cu produsul asociat magazinului în cazul în care vrem sa aplicăm noul preț. Chart-ul conține filtre în funcție de periodate alese de user și afișează un top al produselor în funcție de banii investiți.
 Aplicația este conceputa pentru mobil intrucat m-am gandit ca la stadiul de dezvoltare e mai primordial avand vedere mai ales ca tranzactiile se fac mai mult pe drum. Personal o folosesc de fiecare data cand cumpar ceva (desigur, nu cu baza de date la care e conectata cea din link).
+
+[![N|Solid](https://github.com/gabidiac11/spending-tracking-app-demo-reactjs-firebase/blob/master/doc/example1.jpg)](https://github.com/gabidiac11/spending-tracking-app-demo-reactjs-firebase/blob/master/doc/example1.jpg)
+
+[![N|Solid](https://github.com/gabidiac11/spending-tracking-app-demo-reactjs-firebase/blob/master/doc/example2.jpg)](https://github.com/gabidiac11/spending-tracking-app-demo-reactjs-firebase/blob/master/doc/example2.jpg)
